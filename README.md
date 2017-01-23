@@ -1,37 +1,27 @@
-openemacs
+opennano
 ===
 
-openemacs is a tiny emacs clone without any library dependencies.
+opennano is a tiny nano clone without any library dependencies.
 
-The goal of the project is to implement the most important parts of emacs while staying under 1024 lines of code (as counted by `cloc`).
+The goal of the project is to implement the most important parts of nano while staying under 1024 lines of code (as counted by `cloc`).
 
 Usage:
 
-    openemacs <filename>
+    opennano <filename>
 
 Keys:
 
-    ctrl-a = Go to start of line
-    ctrl-e = Go to end of line
     ctrl-k = Cut/kill line
-    ctrl-l = Re-center screen vertically and refresh
-    ctrl-n = Go to next line (alternative: arrow down)
-    ctrl-p = Go to previous line (alternative: arrow up)
-    ctrl-q = Quoted insert - insert character as-is
-    ctrl-s = Search
-    ctrl-y = Yank line
-    ctrl-z = Suspend
-
-    ctrl-x + ctrl-s = Save
-    ctrl-x + ctrl-c = Exit
+    ctrl-w = Search
+    ctrl-u = UnCut line
+    ctrl-? = Help
+    ctrl-o = Save
+    ctrl-x = Exit
 
 Syntax highlighting support:
 
-* C (`*.c`, `*.h`)
-* C++ (`*.cpp`, `*.hpp`)
-* Go (`*.go`)
-* Python (`*.py`)
+* Sash (`*.sh`)
 
-openemacs is based on Kilo - a minimal editor written by Salvatore Sanfilippo (antirez).
+opennano is based on openemacs which is based on Kilo - a minimal editor written by Salvatore Sanfilippo (antirez).
 
 The code is released under the 2-clause BSD license.
