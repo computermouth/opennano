@@ -1,6 +1,6 @@
-// openemacs: A minimalistic emacs clone in less than 1 024 lines of code.
+// opennano: A minimalistic nano clone in less than 1 024 lines of code.
 //
-// openemacs is released under 2-clause BSD license and is based on kilo,
+// opennano is released under 2-clause BSD license and is based on kilo->openemacs,
 // a very small editor written by Salvatore "antirez" Sanfilippo.
 
 #define _DEFAULT_SOURCE // Linux: ftruncate, getline, kill, strdup
@@ -1140,7 +1140,7 @@ static void editor_init(void) {
 
 int main(int argc, char **argv) {
     if (argc != 2) {
-        fprintf(stderr, "Usage: openemacs <filename>\n");
+        fprintf(stderr, "Usage: opennano <filename>\n");
         exit(EXIT_FAILURE);
     }
     editor_init();
