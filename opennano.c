@@ -93,51 +93,17 @@ enum KEY_ACTION {
     END_KEY, PAGE_UP, PAGE_DOWN
 };
 
-// C/C++ ("class" being C++ only)
-char *C_SYNTAX_HIGHLIGHT_FILE_EXTENSIONS[] = { ".c", ".cpp", ".h", ".hpp", NULL };
-char *C_SYNTAX_HIGHLIGHT_KEYWORDS[] = {
-    // C/C++ keywords
-    "auto", "break", "case", "class", "const", "continue", "default", "do", "else", "enum", "extern", "for", "goto", "if", "register", "return", "sizeof", "static", "struct", "switch", "typedef", "union", "volatile", "while",
-    // C types
-    "bool|", "char|", "double|", "float|", "int|", "long|", "short|", "signed|", "unsigned|", "void|",
-    // C preprocessor directives
-    "#define|", "#endif|", "#error|", "#if|", "#ifdef|", "#ifndef|", "#include|", "#undef|", NULL
-};
-
-// Go
-char *GO_SYNTAX_HIGHLIGHT_FILE_EXTENSIONS[] = { ".go", NULL };
-char *GO_SYNTAX_HIGHLIGHT_KEYWORDS[] = {
-    // Go keywords
-    "if", "for", "range", "while", "defer", "switch", "case", "else", "func", "package", "import", "type", "struct", "import", "const", "var",
-    // Go types
-    "nil|", "true|", "false|", "error|", "err|", "int|", "int32|", "int64|", "uint|", "uint32|", "uint64|", "string|", "bool|", NULL
-};
-// Python
-char *PYTHON_SYNTAX_HIGHLIGHT_FILE_EXTENSIONS[] = { ".py", NULL };
-char *PYTHON_SYNTAX_HIGHLIGHT_KEYWORDS[] = {
-    // Python keywords
-    "and", "as", "assert", "break", "class", "continue", "def", "del", "elif", "else", "except", "exec", "finally", "for", "from", "global", "if", "import", "in", "is", "lambda", "not", "or", "pass", "print", "raise", "return", "try", "while", "with", "yield",
-    // Python types
-    "buffer|", "bytearray|", "complex|", "False|", "float|", "frozenset|", "int|", "list|", "long|", "None|", "set|", "str|", "tuple|", "True|", "type|", "unicode|", "xrange|", NULL
-};
-
-// JavaScript
-char *JAVASCRIPT_SYNTAX_HIGHLIGHT_FILE_EXTENSIONS[] = { ".js", ".jsx", NULL };
-char *JAVASCRIPT_SYNTAX_HIGHLIGHT_KEYWORDS[] = {
-    // JavaScript keywords
-    "break", "case", "catch", "class", "const", "continue", "debugger", "default", "delete", "do", "else", "enum", "export", "extends", "finally", "for", "function", "if", "implements", "import", "in", "instanceof", "interface", "let", "new",
-    "package", "private", "protected", "public", "return", "static", "super", "switch", "this", "throw", "try", "typeof", "var", "void", "while", "with", "yield", "true", "false", "null", "NaN", "global", "window", "prototype", "constructor",
-    "document", "isNaN", "arguments", "undefined",
-    // JavaScript primitives
-    "Infinity|", "Array|", "Object|", "Number|", "String|", "Boolean|", "Function|", "ArrayBuffer|", "DataView|", "Float32Array|", "Float64Array|", "Int8Array|", "Int16Array|", "Int32Array|", "Uint8Array|", "Uint8ClampedArray|", "Uint32Array|",
-    "Date|", "Error|", "Map|", "RegExp|", "Symbol|", "WeakMap|", "WeakSet|", "Set|", NULL
+// Sash
+char *SASH_SYNTAX_HIGHLIGHT_FILE_EXTENSIONS[] = { ".sh", NULL };
+char *SASH_SYNTAX_HIGHLIGHT_KEYWORDS[] = {
+    // Builtins
+    "alias", "aliasall", "cd", "exec", "exit", "help", "prompt", "quit", "setenv", "source", "unalias",
+    // Bins
+    "cmp|", "cp|", "dd|", "echo|", "ed|", "find|", "grep|", "kill|", "ln|", "ls|", "mkdir|", "more|", "mv|", "printenv|", "pwd|", "rm|", "rmdir|", "sum|", "sync|", "tar|", "touch|", "where|", NULL
 };
 
 struct editor_syntax SYNTAX_HIGHLIGHT_DATABASE[] = {
-    { .file_match = C_SYNTAX_HIGHLIGHT_FILE_EXTENSIONS, .keywords = C_SYNTAX_HIGHLIGHT_KEYWORDS, .single_line_comment_start = "//", .multi_line_comment_start = "/*", .multi_line_comment_end = "*/" },
-    { .file_match = PYTHON_SYNTAX_HIGHLIGHT_FILE_EXTENSIONS, .keywords = PYTHON_SYNTAX_HIGHLIGHT_KEYWORDS, .single_line_comment_start = "# ", .multi_line_comment_start = "", .multi_line_comment_end = "" },
-    { .file_match = GO_SYNTAX_HIGHLIGHT_FILE_EXTENSIONS, .keywords = GO_SYNTAX_HIGHLIGHT_KEYWORDS, .single_line_comment_start = "//", .multi_line_comment_start = "", .multi_line_comment_end = "" },
-    { .file_match = JAVASCRIPT_SYNTAX_HIGHLIGHT_FILE_EXTENSIONS, .keywords = JAVASCRIPT_SYNTAX_HIGHLIGHT_KEYWORDS, .single_line_comment_start = "//", .multi_line_comment_start = "/*", .multi_line_comment_end = "*/" }
+    { .file_match = SASH_SYNTAX_HIGHLIGHT_FILE_EXTENSIONS, .keywords = SASH_SYNTAX_HIGHLIGHT_KEYWORDS, .single_line_comment_start = "#", .multi_line_comment_start = "", .multi_line_comment_end = "" }
 };
 
 __attribute__((format(printf, 1, 2)))
@@ -167,7 +133,8 @@ static void editor_free_row(struct editor_row *row) {
 }
 
 static void editor_free_cut_buffer(void) {
-    for (int i = 0; i < E.number_of_cut_buffer_lines; i++) {
+    int i;
+    for (i = 0; i < E.number_of_cut_buffer_lines; i++) {
         free(E.cut_buffer_lines[i]);
     }
     free(E.cut_buffer_lines);
@@ -186,7 +153,8 @@ static void editor_at_exit(void) {
     // - realloc
     // - strdup
     // - vasprintf (implicit realloc)
-    for (int i = 0; i < E.number_of_rows; i++) {
+    int i;
+    for (i = 0; i < E.number_of_rows; i++) {
         editor_free_row(&E.row[i]);
     }
     editor_free_cut_buffer();
@@ -422,7 +390,7 @@ static void editor_update_syntax(struct editor_row *row) {
         p++;
         i++;
     }
-    for (int i = row->rendered_size - 1; i >= 0; i--) {
+    for (i = row->rendered_size - 1; i >= 0; i--) {
         if (row->rendered_chars_syntax_highlight_type[i] == SYNTAX_HIGHLIGHT_MODE_MULTI_LINE_COMMENT) { break; }
         if (isspace(row->rendered_chars[i]) || row->rendered_chars[i] == '\0' || row->rendered_chars[i] == '\n' || row->rendered_chars[i] == '\r') {
             row->rendered_chars_syntax_highlight_type[i] = SYNTAX_HIGHLIGHT_MODE_TRAILING_WHITESPACE;
@@ -461,7 +429,8 @@ static int editor_syntax_to_color(enum SYNTAX_HIGHLIGHT_MODE hl) {
 }
 
 static void editor_select_syntax_highlight_based_on_filename_suffix(char const *filename) {
-    for (size_t j = 0; j < sizeof(SYNTAX_HIGHLIGHT_DATABASE) / sizeof(SYNTAX_HIGHLIGHT_DATABASE[0]); j++) {
+	size_t j;
+    for (j = 0; j < sizeof(SYNTAX_HIGHLIGHT_DATABASE) / sizeof(SYNTAX_HIGHLIGHT_DATABASE[0]); j++) {
         struct editor_syntax *s = SYNTAX_HIGHLIGHT_DATABASE + j;
         int i = 0;
         while (s->file_match[i]) {
@@ -481,12 +450,13 @@ static void editor_update_row(struct editor_row *row) {
     // Create a version of the row we can directly print on the screen,
     // respecting tabs, substituting non printable characters with '?'.
     free(row->rendered_chars);
-    for (int i = 0; i < row->size; i++) {
+    int i;
+    for (i = 0; i < row->size; i++) {
         if (row->chars[i] == TAB) { tabs++; }
     }
     row->rendered_chars = calloc(row->size + tabs * 8 + 1, sizeof(char));
     int local_index = 0;
-    for (int i = 0; i < row->size; i++) {
+    for (i = 0; i < row->size; i++) {
         if (row->chars[i] == TAB) {
             row->rendered_chars[local_index++] = ' ';
             while ((local_index + 1) % 8 != 0) { row->rendered_chars[local_index++] = ' '; }
@@ -508,7 +478,8 @@ static void editor_insert_row(int at, char const *s, size_t len) {
     E.row = realloc(E.row, sizeof(struct editor_row) * (E.number_of_rows + 1));
     if (at != E.number_of_rows) {
         memmove(E.row + at + 1, E.row + at, sizeof(E.row[0]) * (E.number_of_rows - at));
-        for (int i = at + 1; i <= E.number_of_rows; i++) { E.row[i].index_in_file++; }
+        int i;
+        for (i = at + 1; i <= E.number_of_rows; i++) { E.row[i].index_in_file++; }
     }
     E.row[at].size = len;
     E.row[at].chars = calloc(len + 1, sizeof(char));
@@ -530,7 +501,8 @@ static void editor_delete_row(int at) {
     struct editor_row *row = E.row + at;
     editor_free_row(row);
     memmove(E.row + at, E.row + at + 1, sizeof(E.row[0]) * (E.number_of_rows - at - 1));
-    for (int i = at; i < E.number_of_rows - 1; i++) { E.row[i].index_in_file++; }
+    int i;
+    for (i = at; i < E.number_of_rows - 1; i++) { E.row[i].index_in_file++; }
     E.number_of_rows--;
     E.dirty = true;
 }
@@ -543,13 +515,14 @@ static char *editor_rows_to_string(int *buflen) {
     char *buf = NULL, *p = NULL;
     int total_length = 0;
     // Compute count of bytes
-    for (int i = 0; i < E.number_of_rows; i++) {
+    int i;
+    for (i = 0; i < E.number_of_rows; i++) {
         total_length += E.row[i].size + 1; // +1 is for "\n" at end of every row
     }
     *buflen = total_length;
     total_length++; // Also make space for nulterm
     p = buf = calloc(total_length, sizeof(char));
-    for (int i = 0; i < E.number_of_rows; i++) {
+    for (i = 0; i < E.number_of_rows; i++) {
         memcpy(p, E.row[i].chars, E.row[i].size);
         p += E.row[i].size;
         *p = '\n';
@@ -764,7 +737,8 @@ static void editor_refresh_screen(void) {
     struct append_buffer ab = { .buffer = NULL, .length = 0 };
     abuf_append(&ab, "\x1b[?25l", 6); // Hide cursor.
     abuf_append(&ab, "\x1b[H", 3); // Go home.
-    for (int y = 0; y < E.screen_rows; y++) {
+    int y;
+    for (y = 0; y < E.screen_rows; y++) {
         int file_row = E.row_offset + y;
         if (file_row >= E.number_of_rows) {
             abuf_append(&ab, "~\x1b[0K\r\n", 7);
@@ -777,7 +751,8 @@ static void editor_refresh_screen(void) {
             char *c = r->rendered_chars + E.column_offset;
             char *rendered_chars_syntax_highlight_type = r->rendered_chars_syntax_highlight_type + E.column_offset;
             int current_color = -1;
-            for (int i = 0; i < len; i++) {
+            int i;
+            for (i = 0; i < len; i++) {
                 if (rendered_chars_syntax_highlight_type[i] == SYNTAX_HIGHLIGHT_MODE_NORMAL) {
                     if (current_color != -1) {
                         abuf_append(&ab, "\x1b[39m", 5);
@@ -831,7 +806,8 @@ static void editor_refresh_screen(void) {
     int file_row = E.row_offset + E.cursor_y;
     struct editor_row *row = (file_row >= E.number_of_rows) ? NULL : &E.row[file_row];
     if (row) {
-        for (int i = E.column_offset; i < (E.cursor_x + E.column_offset); i++) {
+		int i;
+        for (i = E.column_offset; i < (E.cursor_x + E.column_offset); i++) {
             if (i < row->size && row->chars[i] == TAB) { cursor_x_including_expanded_tabs += 7 - ((cursor_x_including_expanded_tabs) % 8); }
             cursor_x_including_expanded_tabs++;
         }
@@ -931,10 +907,11 @@ static void editor_move_cursor_by_arrow_key_input(int key) {
 static void editor_recenter_vertically(void) {
     if (E.cursor_y - E.screen_rows / 2 != 0 && E.row_offset + E.cursor_y - E.screen_rows / 2 > 0 &&
             E.row_offset + E.cursor_y + E.screen_rows / 2 < E.number_of_rows) {
-        for (int i = 0; i < E.screen_rows / 2; i++) {
+		int i;
+        for (i = 0; i < E.screen_rows / 2; i++) {
             editor_move_cursor_by_arrow_key_input(E.cursor_y - E.screen_rows / 2 < 0 ? ARROW_UP : ARROW_DOWN);
         }
-        for (int i = 0; i < E.screen_rows / 2; i++) {
+        for (i = 0; i < E.screen_rows / 2; i++) {
             editor_move_cursor_by_arrow_key_input(E.cursor_y - E.screen_rows / 2 < 0 ? ARROW_DOWN : ARROW_UP);
         }
     }
@@ -992,7 +969,8 @@ static void editor_search(void) {
             char *match = NULL;
             int match_offset = 0;
             int current = last_match;
-            for (int i = 0; i < E.number_of_rows; i++) {
+            int i;
+            for (i = 0; i < E.number_of_rows; i++) {
                 current += search_next;
                 if (current == -1) {
                     current = E.number_of_rows - 1;
@@ -1095,7 +1073,8 @@ static void editor_process_keypress(void) {
     } else if (key == CTRL_O) {
         editor_save();
     } else if (key == CTRL_U) {
-        for (int i = 0; i < E.number_of_cut_buffer_lines; i++) {
+		int i;
+        for (i = 0; i < E.number_of_cut_buffer_lines; i++) {
             editor_insert_row(E.row_offset + E.cursor_y, E.cut_buffer_lines[i], strlen(E.cut_buffer_lines[i]));
             editor_move_cursor_by_arrow_key_input(ARROW_DOWN);
         }
